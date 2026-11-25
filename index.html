@@ -1,0 +1,496 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Sports Desk</title>
+
+<style>
+  :root {
+    --paper: #faf9f6;
+    --ink: #292824;
+    --muted: #817b72;
+    --border: #dedbd3;
+    --accent: #534238;
+    --highlight: #e8eef2;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  header {
+    text-align: center;
+    border-bottom: 3px double var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .edition {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: normal;
+    margin: 12px 0 6px;
+    letter-spacing: -1.5px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .navigation {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 24px 0;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 2px;
+    padding: 10px 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #ece9e2;
+  }
+
+  button.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .league-title {
+    text-align: center;
+    font-size: 23px;
+    font-weight: normal;
+    margin-bottom: 6px;
+  }
+
+  .status {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 25px;
+  }
+
+  .conference {
+    margin: 28px 0;
+  }
+
+  .conference-title {
+    font-size: 19px;
+    font-weight: normal;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 8px;
+  }
+
+  .division-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .division {
+    min-width: 0;
+    overflow-x: auto;
+  }
+
+  .division-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 8px 0 12px;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: right;
+    font-weight: normal;
+    font-size: 10px;
+    color: var(--muted);
+    padding: 10px 7px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  td {
+    padding: 11px 7px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+
+  td:first-child {
+    text-align: left;
+  }
+
+  .team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team img {
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+  }
+
+  tr.favorite {
+    background: var(--highlight);
+    font-weight: bold;
+  }
+
+  tbody tr:hover {
+    background: #efede7;
+  }
+
+  .message {
+    padding: 30px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 36px;
+    padding-top: 15px;
+    border-top: 3px double var(--ink);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  footer a {
+    color: var(--accent);
+  }
+
+  @media (max-width: 650px) {
+    body {
+      padding: 14px;
+    }
+
+    .division-grid {
+      grid-template-columns: 1fr;
+    }
+
+    table {
+      font-size: 12px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="edition" id="edition"></div>
+    <h1>The Sports Desk</h1>
+    <div class="subtitle">
+      The daily sporting edition.
+    </div>
+  </header>
+
+  <nav class="navigation">
+    <button id="nfl-button" class="active"
+      onclick="loadStandings('nfl')">
+      NFL
+    </button>
+
+    <button id="nba-button"
+      onclick="loadStandings('nba')">
+      NBA
+    </button>
+  </nav>
+
+  <h2 class="league-title" id="league-title">
+    National Football League
+  </h2>
+
+  <div class="status" id="status" aria-live="polite">
+    Retrieving standings...
+  </div>
+
+  <main id="standings"></main>
+
+  <footer>
+    THE SPORTS DESK &nbsp; • &nbsp;
+    Data from <a href="https://www.espn.com/"
+      target="_blank" rel="noopener noreferrer">ESPN</a>
+    <br><br>
+    Automatically refreshed every five minutes
+  </footer>
+
+</div>
+
+<script>
+
+const API = {
+  nfl: "https://site.api.espn.com/apis/v2/sports/football/nfl/standings",
+  nba: "https://site.api.espn.com/apis/v2/sports/basketball/nba/standings"
+};
+
+const favorites = ["DET"];
+let currentLeague = "nfl";
+let requestId = 0;
+
+document.getElementById("edition").textContent =
+  new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]
+  );
+}
+
+function getStat(entry, name) {
+  const stat = entry.stats?.find(s => s.name === name);
+  return stat?.displayValue ?? stat?.value ?? "—";
+}
+
+function safeLogo(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:"
+      ? escapeHTML(parsed.href) : "";
+  } catch {
+    return "";
+  }
+}
+
+function renderTable(group, league) {
+
+  const entries = group.standings?.entries || [];
+
+  const columns = league === "nfl"
+    ? ["W", "L", "T", "PCT"]
+    : ["W", "L", "PCT", "GB"];
+
+  let html = `
+    <div class="division">
+      <h3 class="division-title">
+        ${escapeHTML(group.name)}
+      </h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            ${columns.map(c => `<th>${c}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  entries.forEach(entry => {
+
+    const team = entry.team || {};
+    const logo = safeLogo(team.logos?.[0]?.href);
+    const favorite = favorites.includes(team.abbreviation);
+
+    const wins = getStat(entry, "wins");
+    const losses = getStat(entry, "losses");
+    const ties = getStat(entry, "ties");
+    const pct = getStat(entry, "winPercent");
+    const gb = getStat(entry, "gamesBehind");
+
+    html += `
+      <tr class="${favorite ? "favorite" : ""}">
+        <td>
+          <div class="team">
+            ${logo ? `<img src="${logo}" alt="">` : ""}
+            <span>${escapeHTML(
+              team.shortDisplayName ||
+              team.displayName ||
+              team.abbreviation
+            )}</span>
+          </div>
+        </td>
+
+        <td>${escapeHTML(wins)}</td>
+        <td>${escapeHTML(losses)}</td>
+
+        ${league === "nfl"
+          ? `<td>${escapeHTML(ties)}</td>` : ""}
+
+        <td>${escapeHTML(pct)}</td>
+
+        ${league === "nba"
+          ? `<td>${escapeHTML(gb)}</td>` : ""}
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table></div>";
+  return html;
+}
+
+function renderGroup(group, league) {
+
+  if (group.children?.length) {
+
+    return `
+      <section class="conference">
+        <h2 class="conference-title">
+          ${escapeHTML(group.name)}
+        </h2>
+
+        <div class="division-grid">
+          ${group.children.map(child =>
+            renderGroup(child, league)
+          ).join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  return renderTable(group, league);
+}
+
+function countTeams(group) {
+  return (group.standings?.entries?.length || 0)
+    + (group.children || []).reduce(
+        (sum, child) => sum + countTeams(child), 0
+      );
+}
+
+async function loadStandings(league) {
+
+  const id = ++requestId;
+  currentLeague = league;
+
+  document.getElementById("nfl-button")
+    .classList.toggle("active", league === "nfl");
+
+  document.getElementById("nba-button")
+    .classList.toggle("active", league === "nba");
+
+  document.getElementById("league-title").textContent =
+    league === "nfl"
+      ? "National Football League"
+      : "National Basketball Association";
+
+  const container = document.getElementById("standings");
+  const status = document.getElementById("status");
+
+  status.textContent = "Retrieving standings...";
+
+  container.innerHTML =
+    '<div class="message">Loading the latest standings...</div>';
+
+  try {
+
+    const response = await fetch(API[league], {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Data source unavailable");
+    }
+
+    const data = await response.json();
+
+    if (id !== requestId) return;
+
+    const groups = data.children || [];
+
+    if (!groups.some(group => countTeams(group) > 0)) {
+      throw new Error("No standings available");
+    }
+
+    container.innerHTML = groups.map(group =>
+      renderGroup(group, league)
+    ).join("");
+
+    status.textContent =
+      "Retrieved at " +
+      new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit"
+      });
+
+  } catch (error) {
+
+    if (id !== requestId) return;
+
+    container.innerHTML = `
+      <div class="message">
+        Standings are temporarily unavailable.
+        <br><br>
+        <button onclick="loadStandings(currentLeague)">
+          Retry
+        </button>
+      </div>
+    `;
+
+    status.textContent = "Unable to retrieve data";
+    console.error(error);
+  }
+}
+
+loadStandings("nfl");
+
+setInterval(() => {
+  loadStandings(currentLeague);
+}, 300000);
+
+</script>
+
+</body>
+</html>
