@@ -6,7 +6,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>The Sports Desk</title>
+.nba-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
 
+.nba-grid > * {
+  min-width: 0;
+}
+
+@media (max-width: 650px) {
+  .nba-grid {
+    grid-template-columns: 1fr;
+  }
+}
 <style>
   :root {
     --paper: #faf9f6;
@@ -337,7 +352,19 @@ function renderTable(group, league) {
         </thead>
         <tbody>
   `;
+if (league === "nba") {
+  entries.sort((a, b) => {
+    const pctA = Number(a.stats.find(
+      s => s.name === "winPercent"
+    )?.value ?? 0);
 
+    const pctB = Number(b.stats.find(
+      s => s.name === "winPercent"
+    )?.value ?? 0);
+
+    return pctB - pctA;
+  });
+}
   entries.forEach(entry => {
 
     const team = entry.team || {};
@@ -427,6 +454,7 @@ async function loadStandings(league) {
       : "National Basketball Association";
 
   const container = document.getElementById("standings");
+  container.classList.toggle("nba-grid", league === "nba");
   const status = document.getElementById("status");
 
   status.textContent = "Retrieving standings...";
@@ -449,6 +477,14 @@ async function loadStandings(league) {
     if (id !== requestId) return;
 
     const groups = data.children || [];
+    if (league === "nba") {
+  groups.sort((a, b) => {
+    const order = group =>
+      (group.name || "").toLowerCase().includes("east") ? 0 : 1;
+
+    return order(a) - order(b);
+  });
+}
 
     if (!groups.some(group => countTeams(group) > 0)) {
       throw new Error("No standings available");
