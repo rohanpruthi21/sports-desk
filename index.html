@@ -342,7 +342,7 @@ function renderTable(group, league) {
 
     const team = entry.team || {};
     const logo = safeLogo(team.logos?.[0]?.href);
-    const favorite = favorites.includes(team.abbreviation);
+    const favorite = league === "nfl" && team.abbreviation === "DET";
 
     const wins = getStat(entry, "wins");
     const losses = getStat(entry, "losses");
