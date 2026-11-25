@@ -6,22 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>The Sports Desk</title>
-.nba-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  align-items: start;
-}
 
-.nba-grid > * {
-  min-width: 0;
-}
-
-@media (max-width: 650px) {
-  .nba-grid {
-    grid-template-columns: 1fr;
-  }
-}
 <style>
   :root {
     --paper: #faf9f6;
@@ -235,6 +220,22 @@
       font-size: 12px;
     }
   }
+  .nba-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.nba-grid > * {
+  min-width: 0;
+}
+
+@media (max-width: 650px) {
+  .nba-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
